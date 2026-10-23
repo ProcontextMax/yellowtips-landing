@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yellow Tips · APIs de contexto para agentes de IA en LATAM</title>
+<meta name="description" content="APIs de contexto verificado para agentes de IA en LATAM y España. Verifica citas legales, calcula impuestos y protege datos con endpoints listos para producción.">
+<meta property="og:title" content="Yellow Tips · Contexto verificado para agentes de IA en LATAM">
+<meta property="og:description" content="APIs de contexto verificado para que tu agente de IA no invente leyes, impuestos ni datos personales en LATAM y España.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://yellowtips.com/">
+<meta property="og:image" content="https://yellowtips.com/og-image.png">
+<meta property="og:locale" content="es_ES">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🟡</text></svg>">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    color: #1a1a1a;
+    background: #ffffff;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* Nav */
+  nav {
+    padding: 20px 0;
+    border-bottom: 1px solid #eee;
+    position: sticky;
+    top: 0;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+  }
+  nav .container { display: flex; justify-content: space-between; align-items: center; }
+  .logo { font-weight: 800; font-size: 1.3em; color: #1a1a1a; text-decoration: none; }
+  .logo::before { content: "🟡 "; }
+  nav ul { display: flex; gap: 24px; list-style: none; }
+  nav a { color: #666; text-decoration: none; font-size: 0.95em; font-weight: 500; }
+  nav a:hover { color: #1a1a1a; }
+
+  /* Hero */
+  .hero { padding: 80px 0 60px; text-align: center; }
+  .hero h1 {
+    font-size: clamp(2em, 5vw, 3.5em);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 20px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero h1 .highlight {
+    background: linear-gradient(180deg, transparent 60%, #FFC300 60%);
+    padding: 0 4px;
+  }
+  .hero p {
+    font-size: clamp(1.05em, 2vw, 1.25em);
+    color: #555;
+    max-width: 700px;
+    margin: 0 auto 32px;
+  }
+  .cta-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-block;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1em;
+    text-decoration: none;
+    transition: transform 0.15s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary { background: #1a1a1a; color: #FFC300; }
+  .btn-secondary { background: transparent; color: #1a1a1a; border: 2px solid #1a1a1a; }
+  .microcopy { font-size: 0.9em; color: #888; margin-top: 16px; }
+
+  /* Features */
+  .features { padding: 60px 0; background: #fafafa; }
+  .section-title {
+    text-align: center;
+    font-size: clamp(1.6em, 3vw, 2.2em);
+    font-weight: 800;
+    margin-bottom: 12px;
+  }
+  .section-subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 48px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+  .card {
+    background: white;
+    padding: 32px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    transition: box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+  .card-icon { font-size: 2em; margin-bottom: 16px; display: block; }
+  .card h3 { font-size: 1.2em; font-weight: 700; margin-bottom: 12px; }
+  .card p { color: #555; font-size: 0.95em; }
+  .card code {
+    display: block;
+    background: #1a1a1a;
+    color: #FFC300;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 0.85em;
+    margin-top: 16px;
+    overflow-x: auto;
+  }
+
+  /* Pricing */
+  .pricing { padding: 80px 0; }
+  .grid-pricing {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    margin-top: 48px;
+  }
+  .price-card {
+    padding: 32px;
+    border-radius: 12px;
+    border: 2px solid #eee;
+    text-align: center;
+  }
+  .price-card.featured { border-color: #FFC300; position: relative; }
+  .price-card.featured::before {
+    content: "Más popular";
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #FFC300;
+    color: #1a1a1a;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: 700;
+  }
+  .price-card h3 { font-size: 1.2em; margin-bottom: 8px; }
+  .price { font-size: 2.5em; font-weight: 800; margin: 16px 0; }
+  .price span { font-size: 0.4em; color: #888; font-weight: 400; }
+  .price-card ul { list-style: none; text-align: left; margin: 24px 0; }
+  .price-card li { padding: 8px 0; color: #555; font-size: 0.95em; }
+  .price-card li::before { content: "✓ "; color: #FFC300; font-weight: 700; }
+
+  /* FAQ */
+  .faq { padding: 60px 0; background: #fafafa; }
+  .faq-item { background: white; padding: 24px; border-radius: 8px; margin-bottom: 12px; }
+  .faq-item h3 { font-size: 1.05em; margin-bottom: 8px; }
+  .faq-item p { color: #555; font-size: 0.95em; }
+
+  /* Footer */
+  footer {
+    padding: 40px 0;
+    border-top: 1px solid #eee;
+    text-align: center;
+    color: #888;
+    font-size: 0.9em;
+  }
+  footer a { color: #666; text-decoration: none; margin: 0 8px; }
+  footer a:hover { color: #1a1a1a; }
+  footer .links { margin-bottom: 16px; }
+
+  @media (max-width: 640px) {
+    nav ul { gap: 16px; }
+    nav a { font-size: 0.85em; }
+    .hero { padding: 48px 0 32px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="/" class="logo">Yellow Tips</a>
+    <ul>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="https://docs.yellowtips.com">Docs</a></li>
+      <li><a href="https://github.com/ProcontextMax">GitHub</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <h1>APIs de contexto para que tu agente de IA <span class="highlight">no invente en LATAM</span></h1>
+    <p>Verifica citas legales, calcula impuestos y protege datos personales con endpoints listos para producción. Sin alucinaciones. Sin fricción.</p>
+    <div class="cta-group">
+      <a href="https://docs.yellowtips.com" class="btn btn-primary">Explorar la API</a>
+      <a href="https://github.com/ProcontextMax" class="btn btn-secondary">Ver GitHub</a>
+    </div>
+    <p class="microcopy">100 llamadas gratis al mes · Sin tarjeta de crédito</p>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="container">
+    <h2 class="section-title">Lo que resuelve</h2>
+    <p class="section-subtitle">Cada endpoint resuelve un problema que los LLMs no pueden resolver solos en LATAM.</p>
+
+    <div class="grid-3">
+      <div class="card">
+        <span class="card-icon">⚖️</span>
+        <h3>Verificación legal</h3>
+        <p>Detecta citas fabricadas y citas a derecho derogado (<em>dead law</em>). Verifica existencia, relevancia y temporalidad.</p>
+        <code>POST /v1/legal/verify-citation</code>
+      </div>
+
+      <div class="card">
+        <span class="card-icon">🧾</span>
+        <h3>Cálculo fiscal</h3>
+        <p>Calcula impuestos de importación, retenciones y regímenes fiscales por país. Sin inventar tasas.</p>
+        <code>POST /v1/tax/calculate</code>
+      </div>
+
+      <div class="card">
+        <span class="card-icon">🛡️</span>
+        <h3>Redacción de PII</h3>
+        <p>Enmascara datos personales antes de procesar: RFC, CURP, CUIT, RUT, NIT, DNI, NIE, IBAN.</p>
+        <code>POST /v1/privacy/redact</code>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing" id="pricing">
+  <div class="container">
+    <h2 class="section-title">Precios simples</h2>
+    <p class="section-subtitle">Empieza gratis. Escala cuando lo necesites. Sin contratos.</p>
+
+    <div class="grid-pricing">
+      <div class="price-card">
+        <h3>Free</h3>
+        <div class="price">$0<span>/mes</span></div>
+        <ul>
+          <li>100 llamadas/mes</li>
+          <li>Todos los endpoints</li>
+          <li>Sin tarjeta de crédito</li>
+          <li>Community support</li>
+        </ul>
+        <a href="https://docs.yellowtips.com" class="btn btn-secondary" style="width:100%;">Empezar gratis</a>
+      </div>
+
+      <div class="price-card featured">
+        <h3>Starter</h3>
+        <div class="price">$19<span>/mes</span></div>
+        <ul>
+          <li>1,000 llamadas/mes</li>
+          <li>Todos los endpoints</li>
+          <li>Email support</li>
+          <li>API key dedicada</li>
+        </ul>
+        <a href="https://docs.yellowtips.com" class="btn btn-primary" style="width:100%;">Suscribirse</a>
+      </div>
+
+      <div class="price-card">
+        <h3>Pro</h3>
+        <div class="price">$49<span>/mes</span></div>
+        <ul>
+          <li>5,000 llamadas/mes</li>
+          <li>Todos los endpoints</li>
+          <li>Priority support</li>
+          <li>SLA 99.9%</li>
+        </ul>
+        <a href="https://docs.yellowtips.com" class="btn btn-secondary" style="width:100%;">Suscribirse</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="faq" id="faq">
+  <div class="container">
+    <h2 class="section-title">Preguntas frecuentes</h2>
+    <p class="section-subtitle">Lo que necesitas saber antes de empezar.</p>
+
+    <div class="faq-item">
+      <h3>¿Qué países cubren?</h3>
+      <p>México, Colombia, Argentina, Chile, Perú y España. Estamos añadiendo más países de LATAM progresivamente.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>¿Cómo se integra con mi agente de IA?</h3>
+      <p>Es una API REST estándar. Haces un POST con tu API key y recibes JSON. Funciona con cualquier LLM: OpenAI, Claude, Gemini, Llama, o tu agente custom.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>¿Qué pasa si la cita no está en su base de datos?</h3>
+      <p>Devuelve <code>status: partial</code> con <code>existence_check: not_found</code>. No inventamos una respuesta. Preferimos decir "no puedo verificar" antes que arriesgar una cita falsa.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>¿Puedo usar la API en producción?</h3>
+      <p>Sí. El plan Free es para desarrollo. Los planes Starter y Pro incluyen SLA y soporte para producción.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>¿Cómo cancelo mi suscripción?</h3>
+      <p>Desde tu dashboard en cualquier momento. Sin preguntas, sin penalización. Sigues teniendo acceso hasta el final del período pagado.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="links">
+      <a href="https://docs.yellowtips.com">Docs</a>
+      <a href="https://github.com/ProcontextMax">GitHub</a>
+      <a href="https://ko-fi.com/yellowtips">Ko-fi</a>
+      <a href="mailto:hello@yellowtips.com">Contacto</a>
+    </div>
+    <p>© 2026 Yellow Tips · Built from Colombia for LATAM & Spain.</p>
+  </div>
+</footer>
+
+</body>
+</html>
