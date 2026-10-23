@@ -1,0 +1,30 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Yellow Tips",
+    "identifier": "yellowtips.com"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:yellowtips.com:api:legal-verify-citation",
+      "displayName": "Legal Citation Verification API",
+      "type": "application/json",
+      "url": "https://api.yellowtips.com/v1/legal/verify-citation",
+      "description": "Verifica citas legales en LATAM y España. Detecta citas fabricadas y citas a derecho derogado (dead law), devolviendo el estado de vigencia y la cita que la reemplaza.",
+      "representativeQueries": [
+        "verificar si una sentencia colombiana sigue vigente",
+        "comprobar si una tesis de la SCJN existe",
+        "detectar derecho derogado en Argentina"
+      ],
+      "tags": ["legal", "citations", "LATAM", "dead-law"]
+    },
+    {
+      "identifier": "urn:air:yellowtips.com:docs:api",
+      "displayName": "Yellow Tips API Documentation",
+      "type": "text/html",
+      "url": "https://docs.yellowtips.com",
+      "description": "Documentación técnica completa de la API de Yellow Tips.",
+      "tags": ["documentation", "API", "developer"]
+    }
+  ]
+}
