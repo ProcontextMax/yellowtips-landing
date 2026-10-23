@@ -1,0 +1,30 @@
+# Yellow Tips
+
+> API de contexto verificado para agentes de IA en LATAM y España. Verifica citas legales, calcula impuestos y protege datos personales para que los LLMs no alucinen, no citen derecho derogado y no inventen regulaciones.
+
+## Documentación Principal
+- [API Documentation](https://docs.yellowtips.com): Guía completa de inicio, autenticación, endpoints y códigos de error.
+- [Quick Start](https://docs.yellowtips.com#quickstart): Haz tu primera petición en 30 segundos.
+- [Authentication](https://docs.yellowtips.com#auth): Cómo usar tu API key en el header X-API-Key.
+
+## Endpoints
+- [GET /health](https://docs.yellowtips.com#health): Verifica el estado del servicio. No requiere autenticación.
+- [POST /v1/legal/verify-citation](https://docs.yellowtips.com#verify-citation): Verifica una cita legal en tres capas (existencia, relevancia y temporalidad). Detecta citas fabricadas y citas a derecho derogado (dead law). Jurisdicciones soportadas: MX, CO, AR, CL, PE, ES.
+
+## Producto
+- [Página de Inicio](https://yellowtips.com): Descripción general del producto, características y propuesta de valor.
+- [Precios](https://yellowtips.com#pricing): Plan Free ($0, 100 llamadas/mes), Starter ($19/mes, 1,000 llamadas) y Pro ($49/mes, 5,000 llamadas).
+- [Preguntas Frecuentes](https://yellowtips.com#faq): Respuestas sobre cobertura, integración con LLMs, manejo de citas no encontradas y cancelación.
+
+## Código Abierto
+- [GitHub - ProcontextMax](https://github.com/ProcontextMax): 14 capas de contexto abiertas (MIT) para agentes de IA en LATAM y España. Legal, fiscal, inmobiliario, médico, ecommerce, privacidad, copywriting.
+
+## Contacto
+- [Email](mailto:hello@yellowtips.com): Soporte y consultas.
+- [Ko-fi](https://ko-fi.com/yellowtips): Apoya el proyecto.
+
+## Notas para agentes de IA
+- Esta API devuelve JSON estructurado con envelope `status` / `data` / `error`.
+- Si una cita no está en la base de datos, devuelve `status: partial` con `existence_check: not_found`. Nunca inventa una respuesta "válida" cuando no puede verificar.
+- Los códigos de error siguen el patrón `E400`, `E401`, `E404`, `E500` y `E_CITATION_NOT_FOUND`.
+- Para integración en agentes, consultar la sección [Authentication](https://docs.yellowtips.com#auth) y los ejemplos de `curl` en [verify-citation](https://docs.yellowtips.com#verify-citation).
