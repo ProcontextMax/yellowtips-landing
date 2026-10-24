@@ -16,7 +16,7 @@
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script>
   Paddle.Environment.set("sandbox");
-  Paddle.Initialize({ token: "test_c596bf93dafe0fe7" });
+  Paddle.Initialize({ token: "test_c596bf93dafe0fe742aed3ff1bd" });
 </script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -28,7 +28,6 @@
   }
   .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
 
-  /* Nav */
   nav {
     padding: 20px 0;
     border-bottom: 1px solid #eee;
@@ -45,7 +44,6 @@
   nav a { color: #444; text-decoration: none; font-size: 0.95em; font-weight: 500; }
   nav a:hover { color: #1a1a1a; }
 
-  /* Hero */
   .hero { padding: 80px 0 60px; text-align: center; }
   .hero h1 {
     font-size: clamp(2em, 5vw, 3.5em);
@@ -78,13 +76,21 @@
     cursor: pointer;
     border: none;
     font-family: inherit;
+    text-align: center;
   }
   .btn:hover { transform: translateY(-2px); }
-  .btn-primary { background: #1a1a1a; color: #FFC300; }
-  .btn-secondary { background: transparent; color: #1a1a1a; border: 2px solid #1a1a1a; }
+  .btn-primary { 
+    background: #1a1a1a; 
+    color: #FFC300; 
+    border: 2px solid #FFC300;
+  }
+  .btn-secondary { 
+    background: transparent; 
+    color: #1a1a1a; 
+    border: 2px solid #1a1a1a; 
+  }
   .microcopy { font-size: 0.9em; color: #595959; margin-top: 16px; }
 
-  /* Features */
   .features { padding: 60px 0; background: #fafafa; }
   .section-title {
     text-align: center;
@@ -127,7 +133,6 @@
     overflow-x: auto;
   }
 
-  /* Pricing */
   .pricing { padding: 80px 0; }
   .grid-pricing {
     display: grid;
@@ -162,13 +167,11 @@
   .price-card li { padding: 8px 0; color: #333; font-size: 0.95em; }
   .price-card li::before { content: "✓ "; color: #FFC300; font-weight: 700; }
 
-  /* FAQ */
   .faq { padding: 60px 0; background: #fafafa; }
   .faq-item { background: white; padding: 24px; border-radius: 8px; margin-bottom: 12px; }
   .faq-item h3 { font-size: 1.05em; margin-bottom: 8px; }
   .faq-item p { color: #333; font-size: 0.95em; }
 
-  /* Footer */
   footer {
     padding: 40px 0;
     border-top: 1px solid #eee;
@@ -273,7 +276,7 @@
           <li>Email support</li>
           <li>API key dedicada</li>
         </ul>
-        <a href="#" onclick="event.preventDefault(); openCheckout('pri_01m5nnww9bxsdwr7a2s');" class="btn btn-primary" style="width:100%;">Suscribirse</a>
+        <a href="#" onclick="event.preventDefault(); openCheckout('pri_01m5nnww9bxsdwr7a2skse733g');" class="btn btn-primary" style="width:100%;">Suscribirse</a>
       </div>
 
       <div class="price-card">
@@ -285,7 +288,7 @@
           <li>Priority support</li>
           <li>SLA 99.9%</li>
         </ul>
-        <a href="#" onclick="event.preventDefault(); openCheckout('pri_01m5nnspwenrdkxn9tp');" class="btn btn-secondary" style="width:100%;">Suscribirse</a>
+        <a href="#" onclick="event.preventDefault(); openCheckout('pri_01m5nnspwenrdkxn9tpab41p99');" class="btn btn-secondary" style="width:100%;">Suscribirse</a>
       </div>
     </div>
   </div>
