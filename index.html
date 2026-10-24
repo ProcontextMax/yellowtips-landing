@@ -75,6 +75,9 @@
     font-size: 1em;
     text-decoration: none;
     transition: transform 0.15s;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
   }
   .btn:hover { transform: translateY(-2px); }
   .btn-primary { background: #1a1a1a; color: #FFC300; }
@@ -270,7 +273,7 @@
           <li>Email support</li>
           <li>API key dedicada</li>
         </ul>
-        <button onclick="openCheckout('pri_01m5nnww9bxsdwr7a2s')" class="btn btn-primary" style="width:100%; border:none; cursor:pointer; font-family:inherit;">Suscribirse</button>
+        <a href="#" onclick="event.preventDefault(); openCheckout('pri_01m5nnww9bxsdwr7a2s');" class="btn btn-primary" style="width:100%;">Suscribirse</a>
       </div>
 
       <div class="price-card">
@@ -282,7 +285,7 @@
           <li>Priority support</li>
           <li>SLA 99.9%</li>
         </ul>
-        <button onclick="openCheckout('pri_01m5nnspwenrdkxn9tp')" class="btn btn-secondary" style="width:100%; cursor:pointer; font-family:inherit;">Suscribirse</button>
+        <a href="#" onclick="event.preventDefault(); openCheckout('pri_01m5nnspwenrdkxn9tp');" class="btn btn-secondary" style="width:100%;">Suscribirse</a>
       </div>
     </div>
   </div>
@@ -333,18 +336,24 @@
     <p>© 2026 Yellow Tips · Built from Colombia for LATAM & Spain.</p>
   </div>
 </footer>
+
 <script>
   function openCheckout(priceId) {
+    if (typeof Paddle === "undefined" || !Paddle.Checkout) {
+      alert("Paddle is still loading. Please wait a second and try again.");
+      return;
+    }
     Paddle.Checkout.open({
       items: [{ priceId: priceId, quantity: 1 }],
       settings: {
         displayMode: "overlay",
         theme: "light",
         locale: "es",
-        successUrl: "https://yellowtips.com/success"
+        successUrl: "https://yellowtips.com"
       }
     });
   }
 </script>
+
 </body>
 </html>
