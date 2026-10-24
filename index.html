@@ -13,6 +13,11 @@
 <meta property="og:locale" content="es_ES">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🟡</text></svg>">
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+<script>
+  Paddle.Environment.set("sandbox");
+  Paddle.Initialize({ token: "test_c596bf93dafe0fe7" });
+</script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -265,7 +270,7 @@
           <li>Email support</li>
           <li>API key dedicada</li>
         </ul>
-        <a href="https://docs.yellowtips.com" class="btn btn-primary" style="width:100%;">Suscribirse</a>
+        <button onclick="openCheckout('pri_01m5nnww9bxsdwr7a2s')" class="btn btn-primary" style="width:100%; border:none; cursor:pointer; font-family:inherit;">Suscribirse</button>
       </div>
 
       <div class="price-card">
@@ -277,7 +282,7 @@
           <li>Priority support</li>
           <li>SLA 99.9%</li>
         </ul>
-        <a href="https://docs.yellowtips.com" class="btn btn-secondary" style="width:100%;">Suscribirse</a>
+        <button onclick="openCheckout('pri_01m5nnspwenrdkxn9tp')" class="btn btn-secondary" style="width:100%; cursor:pointer; font-family:inherit;">Suscribirse</button>
       </div>
     </div>
   </div>
@@ -328,6 +333,18 @@
     <p>© 2026 Yellow Tips · Built from Colombia for LATAM & Spain.</p>
   </div>
 </footer>
-
+<script>
+  function openCheckout(priceId) {
+    Paddle.Checkout.open({
+      items: [{ priceId: priceId, quantity: 1 }],
+      settings: {
+        displayMode: "overlay",
+        theme: "light",
+        locale: "es",
+        successUrl: "https://yellowtips.com/success"
+      }
+    });
+  }
+</script>
 </body>
 </html>
