@@ -214,9 +214,15 @@
     <!-- YellowTips Search Integration -->
 <div class="yt-search-widget" style="margin-top: 30px; margin-bottom: 30px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: left;">
   <div style="display: flex; gap: 10px;">
-    <input type="text" id="yt-query" placeholder="Ej: pensión de vejez, estabilidad laboral..." style="flex: 1; padding: 15px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 16px; outline: none; color: #334155;" onkeydown="if(event.keyCode === 13) realizarBusquedaLanding()">
+    <input type="text" id="yt-query" placeholder="Ej: me despidieron por estar enfermo, pensión de vejez negada..." style="flex: 1; padding: 15px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 16px; outline: none; color: #334155;" onkeydown="if(event.keyCode === 13) realizarBusquedaLanding()">
     <button onclick="realizarBusquedaLanding()" id="yt-btn" style="background: #F5B700; color: #1E293B; font-weight: bold; border: none; padding: 0 25px; border-radius: 8px; cursor: pointer; font-size: 16px; transition: 0.2s;">Buscar</button>
   </div>
+  <p style="margin: 10px 0 0 0; font-size: 13px; color: #64748B; line-height: 1.5;">
+    💡 <strong>Buscá como hablarías normalmente:</strong> "me despidieron por estar enfermo", "pensión de vejez negada", "tutela por salud". También acepta conceptos jurídicos y citas (T-229/25). Los filtros de abajo son opcionales.
+  </p>
+  <p id="yt-corpus-info" style="margin: 6px 0 0 0; font-size: 12px; color: #94A3B8;">
+    📊 Cargando información del corpus...
+  </p>
   <div style="display: flex; gap: 10px; margin-top: 10px;">
     <select id="yt-sentido" style="flex: 1; padding: 10px; border: 1px solid #E2E8F0; border-radius: 8px; color: #334155;">
       <option value="">Cualquier sentido</option>
@@ -238,6 +244,28 @@
 </div>
 <script>
 const MAX_FREE_SEARCHES = 5;
+
+// Cargar info del corpus desde /health (badge bajo el buscador)
+fetch("https://api.yellowtips.com/health")
+  .then(r => r.json())
+  .then(d => {
+    const info = document.getElementById("yt-corpus-info");
+    if (!info) return;
+    const c = d && d.data && d.data.corpus;
+    if (!c || !c.total || !c.fecha_min || !c.fecha_max) { info.style.display = "none"; return; }
+    const meses = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+    const fmin = new Date(c.fecha_min + "T00:00:00Z");
+    const fmax = new Date(c.fecha_max + "T00:00:00Z");
+    const mesAnioMin = meses[fmin.getUTCMonth()] + " " + fmin.getUTCFullYear();
+    const mesAnioMax = meses[fmax.getUTCMonth()] + " " + fmax.getUTCFullYear();
+    const totalFmt = c.total.toLocaleString("es-CO");
+    info.innerHTML = "📊 <strong>" + totalFmt + " sentencias</strong> · cobertura " + mesAnioMin + " – " + mesAnioMax;
+  })
+  .catch(() => {
+    const info = document.getElementById("yt-corpus-info");
+    if (info) info.style.display = "none";
+  });
+
 const PROXY_URL = "https://yellowtips-app.pages.dev/api/argument";
 document.addEventListener("DOMContentLoaded", () => {
   const calls = parseInt(localStorage.getItem("yt_landing_calls") || "0", 10);
