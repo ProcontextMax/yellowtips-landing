@@ -358,5 +358,99 @@
   }
 </script>
 
+<!-- YellowTips Search Integration -->
+<div class="yt-search-widget" style="margin-top: 30px; margin-bottom: 30px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: left;">
+  <div style="display: flex; gap: 10px;">
+    <input type="text" id="yt-query" placeholder="Ej: pensión de vejez, estabilidad laboral..." style="flex: 1; padding: 15px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 16px; outline: none; color: #334155;" onkeydown="if(event.keyCode === 13) realizarBusquedaLanding()">
+    <button onclick="realizarBusquedaLanding()" id="yt-btn" style="background: #F5B700; color: #1E293B; font-weight: bold; border: none; padding: 0 25px; border-radius: 8px; cursor: pointer; font-size: 16px; transition: 0.2s;">Buscar</button>
+  </div>
+  <div style="display: flex; gap: 10px; margin-top: 10px;">
+    <select id="yt-sentido" style="flex: 1; padding: 10px; border: 1px solid #E2E8F0; border-radius: 8px; color: #334155;">
+      <option value="">Cualquier sentido</option>
+      <option value="concede">Concede</option>
+      <option value="niega">Niega</option>
+      <option value="modula">Modula</option>
+    </select>
+    <select id="yt-derecho" style="flex: 1; padding: 10px; border: 1px solid #E2E8F0; border-radius: 8px; color: #334155;">
+      <option value="">Cualquier derecho</option>
+      <option value="pension">Pensión</option>
+      <option value="estabilidad">Estabilidad</option>
+      <option value="discapacidad">Discapacidad</option>
+      <option value="trabajo">Trabajo</option>
+    </select>
+  </div>
+  <div id="yt-loader" style="display: none; text-align: center; margin-top: 15px; color: #64748B;">⏳ Analizando jurisprudencia...</div>
+  <div id="yt-error" style="display: none; color: #DC2626; margin-top: 15px; font-size: 14px;"></div>
+  <div id="yt-results" style="margin-top: 20px; max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;"></div>
+</div>
+<script>
+const MAX_FREE_SEARCHES = 5;
+const PROXY_URL = "https://yellowtips-app.pages.dev/api/argument";
+document.addEventListener("DOMContentLoaded", () => {
+  const calls = parseInt(localStorage.getItem("yt_landing_calls") || "0", 10);
+  if (calls >= MAX_FREE_SEARCHES) bloquearBuscador();
+});
+async function realizarBusquedaLanding() {
+  let calls = parseInt(localStorage.getItem("yt_landing_calls") || "0", 10);
+  if (calls >= MAX_FREE_SEARCHES) { bloquearBuscador(); return; }
+  const q = document.getElementById("yt-query").value.trim();
+  const sentido = document.getElementById("yt-sentido").value;
+  const derecho = document.getElementById("yt-derecho").value;
+  if (!q) return;
+  const btn = document.getElementById("yt-btn");
+  const loader = document.getElementById("yt-loader");
+  const errorDiv = document.getElementById("yt-error");
+  const resultsDiv = document.getElementById("yt-results");
+  btn.disabled = true; loader.style.display = "block"; errorDiv.style.display = "none"; resultsDiv.innerHTML = "";
+  const params = new URLSearchParams({ q, limit: 5 });
+  if (sentido) params.append("sentido", sentido);
+  if (derecho) params.append("derecho", derecho);
+  try {
+    const response = await fetch(PROXY_URL + "?" + params.toString());
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error?.message || "Error en el servidor");
+    calls++;
+    localStorage.setItem("yt_landing_calls", calls);
+    renderResultadosLanding(data.data.results, calls);
+  } catch (err) {
+    errorDiv.textContent = "⚠️ " + err.message;
+    errorDiv.style.display = "block";
+  } finally {
+    btn.disabled = false;
+    loader.style.display = "none";
+  }
+}
+function renderResultadosLanding(results, calls) {
+  const container = document.getElementById("yt-results");
+  if (!results || results.length === 0) {
+    container.innerHTML = '<p style="color:#64748B; font-size:14px; text-align:center;">No se encontraron resultados.</p>';
+    return;
+  }
+  let html = '<p style="font-size: 12px; color: #64748B; margin-bottom: 10px;">Búsquedas restantes: ' + (MAX_FREE_SEARCHES - calls) + ' de ' + MAX_FREE_SEARCHES + '</p>';
+  const badChar = String.fromCharCode(65533);
+  results.forEach(r => {
+    let badgeColor = r.sentido === "concede" ? "#DCFCE7" : r.sentido === "niega" ? "#FEE2E2" : "#FEF3C7";
+    let textColor = r.sentido === "concede" ? "#166534" : r.sentido === "niega" ? "#991B1B" : "#92400E";
+    const snippetLimpio = (r.snippet_problema || r.problema_juridico || "").replace(new RegExp(badChar + 'n', 'g'), "ón").replace(new RegExp(badChar + 's', 'g'), "ás").replace(new RegExp(badChar, 'g'), "e");
+    html += '<div style="border-left: 3px solid #F5B700; padding-left: 15px; padding-bottom: 5px;">';
+    html += '<h4 style="margin: 0 0 5px 0; font-size: 15px;"><a href="' + r.fuente_url + '" target="_blank" style="color: #2563EB; text-decoration: none;">' + (r.titulo || "Sentencia " + r.id) + '</a></h4>';
+    html += '<div style="font-size: 12px; color: #64748B; margin-bottom: 8px; display: flex; gap: 10px; align-items: center;"><span>' + r.fecha + '</span><span style="background:' + badgeColor + '; color:' + textColor + '; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase;">' + r.sentido + '</span></div>';
+    html += '<div style="font-size: 14px; color: #334155; line-height: 1.5;">...' + snippetLimpio.substring(0, 200) + '...</div></div>';
+  });
+  container.innerHTML = html;
+  if (calls >= MAX_FREE_SEARCHES) bloquearBuscador();
+}
+function bloquearBuscador() {
+  const btn = document.getElementById("yt-btn");
+  const input = document.getElementById("yt-query");
+  const container = document.getElementById("yt-results");
+  input.disabled = true;
+  input.placeholder = "Límite de prueba alcanzado";
+  btn.disabled = true;
+  btn.textContent = "Bloqueado";
+  btn.style.background = "#E2E8F0";
+  container.innerHTML = '<div style="background: #FEF3C7; border: 1px solid #F59E0B; padding: 15px; border-radius: 8px; text-align: center; margin-top: 15px;"><p style="margin: 0; color: #92400E; font-weight: bold;">Has alcanzado el límite de 5 búsquedas gratuitas.</p><p style="margin: 5px 0 0 0; color: #92400E; font-size: 13px;">Crea una cuenta o explora la documentación para seguir usando el motor.</p><a href="https://docs.yellowtips.com" style="display: inline-block; margin-top: 10px; background: #F5B700; color: #1E293B; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px;">Obtener API Key</a></div>';
+}
+</script>
 </body>
 </html>
