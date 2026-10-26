@@ -183,6 +183,8 @@
   footer a:hover { color: #1a1a1a; }
   footer .links { margin-bottom: 16px; }
 
+  mark { background-color: #FDE047; color: inherit; padding: 0 2px; border-radius: 2px; }
+
   @media (max-width: 640px) {
     nav ul { gap: 16px; }
     nav a { font-size: 0.85em; }
@@ -223,7 +225,7 @@
   <p id="yt-corpus-info" style="margin: 6px 0 0 0; font-size: 12px; color: #94A3B8;">
     📊 Cargando información del corpus...
   </p>
-  <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+  <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; align-items: center;">
     <select id="yt-sentido" style="flex: 1; min-width: 140px; padding: 10px; border: 1px solid #E2E8F0; border-radius: 8px; color: #334155;">
       <option value="">Cualquier sentido</option>
       <option value="concede">Concede</option>
@@ -246,6 +248,7 @@
       <option value="C">Constitucionalidad (C)</option>
       <option value="SU">Unificación (SU)</option>
     </select>
+    <button onclick="limpiarFiltros()" style="padding: 10px 16px; background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; white-space: nowrap;">Limpiar filtros</button>
   </div>
   <div id="yt-loader" style="display: none; text-align: center; margin-top: 15px; color: #64748B;">⏳ Analizando jurisprudencia...</div>
   <div id="yt-error" style="display: none; color: #DC2626; margin-top: 15px; font-size: 14px;"></div>
@@ -317,7 +320,7 @@ async function realizarBusquedaLanding() {
     if (!response.ok) throw new Error(data.error?.message || "Error en el servidor");
     calls++;
     localStorage.setItem("yt_landing_calls", calls);
-    renderResultadosLanding(data.data.results, calls);
+    renderResultadosLanding(data.data.results, calls, q);
   } catch (err) {
     errorDiv.textContent = "⚠️ " + err.message;
     errorDiv.style.display = "block";
@@ -326,7 +329,7 @@ async function realizarBusquedaLanding() {
     loader.style.display = "none";
   }
 }
-function renderResultadosLanding(results, calls) {
+function renderResultadosLanding(results, calls, q) {
   const container = document.getElementById("yt-results");
   if (!results || results.length === 0) {
     container.innerHTML = '<p style="color:#64748B; font-size:14px; text-align:center;">No se encontraron resultados.</p>';
@@ -337,14 +340,30 @@ function renderResultadosLanding(results, calls) {
   results.forEach(r => {
     let badgeColor = r.sentido === "concede" ? "#DCFCE7" : r.sentido === "niega" ? "#FEE2E2" : "#FEF3C7";
     let textColor = r.sentido === "concede" ? "#166534" : r.sentido === "niega" ? "#991B1B" : "#92400E";
-    const snippetLimpio = (r.snippet_problema || r.problema_juridico || "").replace(new RegExp(badChar + 'n', 'g'), "ón").replace(new RegExp(badChar + 's', 'g'), "ás").replace(new RegExp(badChar, 'g'), "e");
+    let snippetLimpio = (r.snippet_problema || r.problema_juridico || "").replace(new RegExp(badChar + 'n', 'g'), "ón").replace(new RegExp(badChar + 's', 'g'), "ás").replace(new RegExp(badChar, 'g'), "e");
+    // Highlight: marcar las palabras del query en el snippet
+    let snippetHighlight = snippetLimpio;
+    if (q) {
+      const palabras = q.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+      palabras.forEach(function(p) {
+        const re = new RegExp("(" + p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "gi");
+        snippetHighlight = snippetHighlight.replace(re, "<mark>$1</mark>");
+      });
+    }
     html += '<div style="border-left: 3px solid #F5B700; padding-left: 15px; padding-bottom: 5px;">';
     html += '<h4 style="margin: 0 0 5px 0; font-size: 15px;"><a href="/sentencia?id=' + r.id + '" style="color: #2563EB; text-decoration: none;">' + (r.titulo || "Sentencia " + r.id) + '</a></h4>';
     html += '<div style="font-size: 12px; color: #64748B; margin-bottom: 8px; display: flex; gap: 10px; align-items: center;"><span>' + r.fecha + '</span><span style="background:' + badgeColor + '; color:' + textColor + '; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase;">' + r.sentido + '</span></div>';
-    html += '<div style="font-size: 14px; color: #334155; line-height: 1.5;">...' + snippetLimpio.substring(0, 200) + '...</div></div>';
+    html += '<div style="font-size: 14px; color: #334155; line-height: 1.5;">...' + snippetHighlight.substring(0, 400) + '...</div></div>';
   });
   container.innerHTML = html;
   if (calls >= MAX_FREE_SEARCHES) bloquearBuscador();
+}
+function limpiarFiltros() {
+  document.getElementById("yt-sentido").value = "";
+  document.getElementById("yt-derecho").value = "";
+  document.getElementById("yt-anio").value = "";
+  document.getElementById("yt-tipo").value = "";
+  document.getElementById("yt-query").value = "";
 }
 function bloquearBuscador() {
   const btn = document.getElementById("yt-btn");
