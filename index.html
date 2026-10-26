@@ -314,7 +314,7 @@ function renderResultadosLanding(results, calls) {
     let textColor = r.sentido === "concede" ? "#166534" : r.sentido === "niega" ? "#991B1B" : "#92400E";
     const snippetLimpio = (r.snippet_problema || r.problema_juridico || "").replace(new RegExp(badChar + 'n', 'g'), "ón").replace(new RegExp(badChar + 's', 'g'), "ás").replace(new RegExp(badChar, 'g'), "e");
     html += '<div style="border-left: 3px solid #F5B700; padding-left: 15px; padding-bottom: 5px;">';
-    html += '<h4 style="margin: 0 0 5px 0; font-size: 15px;"><a href="' + r.fuente_url + '" target="_blank" style="color: #2563EB; text-decoration: none;">' + (r.titulo || "Sentencia " + r.id) + '</a></h4>';
+    html += '<h4 style="margin: 0 0 5px 0; font-size: 15px;"><a href="/sentencia?id=' + r.id + '" style="color: #2563EB; text-decoration: none;">' + (r.titulo || "Sentencia " + r.id) + '</a></h4>';
     html += '<div style="font-size: 12px; color: #64748B; margin-bottom: 8px; display: flex; gap: 10px; align-items: center;"><span>' + r.fecha + '</span><span style="background:' + badgeColor + '; color:' + textColor + '; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase;">' + r.sentido + '</span></div>';
     html += '<div style="font-size: 14px; color: #334155; line-height: 1.5;">...' + snippetLimpio.substring(0, 200) + '...</div></div>';
   });
