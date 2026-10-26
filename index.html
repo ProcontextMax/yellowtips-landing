@@ -223,19 +223,28 @@
   <p id="yt-corpus-info" style="margin: 6px 0 0 0; font-size: 12px; color: #94A3B8;">
     📊 Cargando información del corpus...
   </p>
-  <div style="display: flex; gap: 10px; margin-top: 10px;">
-    <select id="yt-sentido" style="flex: 1; padding: 10px; border: 1px solid #E2E8F0; border-radius: 8px; color: #334155;">
+  <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+    <select id="yt-sentido" style="flex: 1; min-width: 140px; padding: 10px; border: 1px solid #E2E8F0; border-radius: 8px; color: #334155;">
       <option value="">Cualquier sentido</option>
       <option value="concede">Concede</option>
       <option value="niega">Niega</option>
       <option value="modula">Modula</option>
     </select>
-    <select id="yt-derecho" style="flex: 1; padding: 10px; border: 1px solid #E2E8F0; border-radius: 8px; color: #334155;">
+    <select id="yt-derecho" style="flex: 1; min-width: 140px; padding: 10px; border: 1px solid #E2E8F0; border-radius: 8px; color: #334155;">
       <option value="">Cualquier derecho</option>
       <option value="pension">Pensión</option>
       <option value="estabilidad">Estabilidad</option>
       <option value="discapacidad">Discapacidad</option>
       <option value="trabajo">Trabajo</option>
+    </select>
+    <select id="yt-anio" style="flex: 1; min-width: 120px; padding: 10px; border: 1px solid #E2E8F0; border-radius: 8px; color: #334155;">
+      <option value="">Cualquier año</option>
+    </select>
+    <select id="yt-tipo" style="flex: 1; min-width: 160px; padding: 10px; border: 1px solid #E2E8F0; border-radius: 8px; color: #334155;">
+      <option value="">Cualquier tipo</option>
+      <option value="T">Tutela (T)</option>
+      <option value="C">Constitucionalidad (C)</option>
+      <option value="SU">Unificación (SU)</option>
     </select>
   </div>
   <div id="yt-loader" style="display: none; text-align: center; margin-top: 15px; color: #64748B;">⏳ Analizando jurisprudencia...</div>
@@ -245,7 +254,7 @@
 <script>
 const MAX_FREE_SEARCHES = 5;
 
-// Cargar info del corpus desde /health (badge bajo el buscador)
+// Cargar info del corpus desde /health (badge bajo el buscador + poblar años dinámicamente)
 fetch("https://api.yellowtips.com/health")
   .then(r => r.json())
   .then(d => {
@@ -260,6 +269,18 @@ fetch("https://api.yellowtips.com/health")
     const mesAnioMax = meses[fmax.getUTCMonth()] + " " + fmax.getUTCFullYear();
     const totalFmt = (c.total_buscables || c.total).toLocaleString("es-CO");
     info.innerHTML = "📊 <strong>" + totalFmt + " sentencias</strong> de la Corte Constitucional de Colombia · cobertura " + mesAnioMin + " – " + mesAnioMax;
+    // Poblar select de años dinámicamente (desde fecha_min hasta fecha_max)
+    const selAnio = document.getElementById("yt-anio");
+    if (selAnio) {
+      const anioMin = fmin.getUTCFullYear();
+      const anioMax = fmax.getUTCFullYear();
+      for (let a = anioMin; a <= anioMax; a++) {
+        const opt = document.createElement("option");
+        opt.value = a;
+        opt.textContent = a;
+        selAnio.appendChild(opt);
+      }
+    }
   })
   .catch(() => {
     const info = document.getElementById("yt-corpus-info");
@@ -277,6 +298,8 @@ async function realizarBusquedaLanding() {
   const q = document.getElementById("yt-query").value.trim();
   const sentido = document.getElementById("yt-sentido").value;
   const derecho = document.getElementById("yt-derecho").value;
+  const anio = document.getElementById("yt-anio").value;
+  const tipo = document.getElementById("yt-tipo").value;
   if (!q) return;
   const btn = document.getElementById("yt-btn");
   const loader = document.getElementById("yt-loader");
@@ -286,6 +309,8 @@ async function realizarBusquedaLanding() {
   const params = new URLSearchParams({ q, limit: 5 });
   if (sentido) params.append("sentido", sentido);
   if (derecho) params.append("derecho", derecho);
+  if (anio) params.append("anio", anio);
+  if (tipo) params.append("tipo", tipo);
   try {
     const response = await fetch(PROXY_URL + "?" + params.toString());
     const data = await response.json();
@@ -480,7 +505,6 @@ function bloquearBuscador() {
     });
   }
 </script>
-
 
 <!-- Default Statcounter code for A A A Yellow Tips
 https://yellowtips.com/ -->
