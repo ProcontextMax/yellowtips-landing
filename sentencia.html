@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentencia - Yellow Tips</title>
+<style>
+:root { --primary: #F5B700; --dark: #1E293B; --light: #F8FAFC; --border: #E2E8F0; --text: #334155; }
+* { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+body { background: var(--light); color: var(--text); margin: 0; padding: 0; }
+header { background: white; padding: 20px 40px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px; }
+header a { color: var(--dark); text-decoration: none; font-size: 24px; font-weight: bold; }
+header a span { color: var(--primary); }
+main { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+.card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+h1 { margin: 0 0 10px 0; font-size: 22px; color: var(--dark); }
+.meta { font-size: 14px; color: #64748B; margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-weight: 600; text-transform: uppercase; font-size: 12px; }
+.badge.concede { background: #DCFCE7; color: #166534; }
+.badge.niega { background: #FEE2E2; color: #991B1B; }
+.badge.modula { background: #FEF3C7; color: #92400E; }
+.badge.mixto { background: #E0E7FF; color: #3730A3; }
+.badge.indeterminado { background: #F1F5F9; color: #475569; }
+.section { margin-top: 25px; }
+.section h2 { font-size: 16px; color: var(--dark); margin-bottom: 10px; border-bottom: 2px solid var(--primary); padding-bottom: 5px; display: inline-block; }
+.section p { line-height: 1.7; white-space: pre-wrap; font-size: 15px; }
+.actions { margin-top: 30px; display: flex; gap: 15px; flex-wrap: wrap; }
+.actions a { display: inline-block; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px; }
+.actions a.primary { background: var(--primary); color: var(--dark); }
+.actions a.secondary { background: white; color: var(--dark); border: 2px solid var(--border); }
+.loader, .error { text-align: center; padding: 40px; }
+.error { color: #DC2626; }
+</style>
+</head>
+<body>
+<header><a href="/">Yellow<span>Tips</span></a></header>
+<main>
+<div id="loader" class="loader">⏳ Cargando sentencia...</div>
+<div id="error" class="error" style="display:none"></div>
+<div id="content" style="display:none"></div>
+</main>
+<script>
+const API = '/api/sentencia';
+const id = new URLSearchParams(location.search).get('id');
+if (!id) {
+  document.getElementById('loader').style.display = 'none';
+  const err = document.getElementById('error'); err.textContent = '⚠️ Falta el parámetro ?id= en la URL'; err.style.display = 'block';
+} else {
+  fetch(`${API}?id=${encodeURIComponent(id)}`)
+    .then(r => r.json())
+    .then(j => {
+      document.getElementById('loader').style.display = 'none';
+      if (!j.data) { throw new Error(j.error?.message || 'Sentencia no encontrada'); }
+      const d = j.data;
+      const badgeClass = ['concede','niega','modula','mixto','indeterminado'].includes(d.sentido) ? d.sentido : 'indeterminado';
+      const derechos = Array.isArray(d.derechos) ? d.derechos : (typeof d.derechos === 'string' ? JSON.parse(d.derechos || '[]') : []);
+      let html = `<div class="card">
+        <h1>${d.titulo || 'Sentencia ' + d.id}</h1>
+        <div class="meta">
+          <span><strong>${d.id}</strong></span>
+          <span>${d.fecha || ''}</span>
+          ${d.ponente ? '<span>Ponente: ' + d.ponente + '</span>' : ''}
+          <span class="badge ${badgeClass}">${d.sentido || 'indeterminado'}</span>
+        </div>
+        <div class="section">
+          <h2>Problema jurídico</h2>
+          <p>${(d.problema_juridico || 'No disponible').replace(/</g,'&lt;')}</p>
+        </div>
+        <div class="section">
+          <h2>Ratio decidendi</h2>
+          <p>${(d.ratio_decidendi || 'No disponible').replace(/</g,'&lt;')}</p>
+        </div>
+        ${derechos.length ? `<div class="section"><h2>Derechos</h2><p>${derechos.join(', ')}</p></div>` : ''}
+        <div class="actions">
+          ${d.fuente_url ? '<a class="primary" href="' + d.fuente_url + '" target="_blank" rel="noopener">Ver texto original</a>' : ''}
+          <a class="secondary" href="/">Volver al buscador</a>
+        </div>
+      </div>`;
+      document.getElementById('content').innerHTML = html;
+      document.getElementById('content').style.display = 'block';
+    })
+    .catch(e => {
+      document.getElementById('loader').style.display = 'none';
+      const err = document.getElementById('error'); err.textContent = '⚠️ ' + e.message; err.style.display = 'block';
+    });
+}
+</script>
+</body>
+</html>
