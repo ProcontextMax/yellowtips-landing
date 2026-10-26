@@ -258,8 +258,8 @@ fetch("https://api.yellowtips.com/health")
     const fmax = new Date(c.fecha_max + "T00:00:00Z");
     const mesAnioMin = meses[fmin.getUTCMonth()] + " " + fmin.getUTCFullYear();
     const mesAnioMax = meses[fmax.getUTCMonth()] + " " + fmax.getUTCFullYear();
-    const totalFmt = c.total.toLocaleString("es-CO");
-    info.innerHTML = "📊 <strong>" + totalFmt + " sentencias</strong> · cobertura " + mesAnioMin + " – " + mesAnioMax;
+    const totalFmt = (c.total_buscables || c.total).toLocaleString("es-CO");
+    info.innerHTML = "📊 <strong>" + totalFmt + " sentencias</strong> de la Corte Constitucional de Colombia · cobertura " + mesAnioMin + " – " + mesAnioMax;
   })
   .catch(() => {
     const info = document.getElementById("yt-corpus-info");
