@@ -40,7 +40,7 @@ h1 { margin: 0 0 10px 0; font-size: 22px; color: var(--dark); }
 <div id="content" style="display:none"></div>
 </main>
 <script>
-const API = '/api/sentencia';
+const API = 'https://yellowtips-app.pages.dev/api/sentencia';
 const id = new URLSearchParams(location.search).get('id');
 if (!id) {
   document.getElementById('loader').style.display = 'none';
