@@ -1,23 +1,16 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yellow Tips · APIs de contexto para agentes de IA en LATAM</title>
-<meta name="description" content="APIs de contexto verificado para agentes de IA en LATAM y España. Verifica citas legales, calcula impuestos y protege datos con endpoints listos para producción.">
-<meta property="og:title" content="Yellow Tips · Contexto verificado para agentes de IA en LATAM">
-<meta property="og:description" content="APIs de contexto verificado para que tu agente de IA no invente leyes, impuestos ni datos personales en LATAM y España.">
+<title>Yellow Tips · Buscador de jurisprudencia de la Corte Constitucional</title>
+<meta name="description" content="Encuentra la sentencia de la Corte Constitucional que resuelve tu caso. Búsqueda por problema jurídico, con ratio decidendi extraída y link a la fuente oficial.">
+<meta property="og:title" content="Yellow Tips · Buscador de jurisprudencia de la Corte Constitucional">
+<meta property="og:description" content="Encuentra la sentencia que resuelve tu caso. Búsqueda semántica por problema jurídico, con ratio extraída.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://yellowtips.com/">
-<meta property="og:image" content="https://yellowtips.com/og-image.png">
-<meta property="og:locale" content="es_ES">
+<meta property="og:locale" content="es_CO">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🟡</text></svg>">
-<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
-<script>
-  Paddle.Environment.set("sandbox");
-  Paddle.Initialize({ token: "test_c596bf93dafe0fe742aed3ff1bd" });
-</script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -44,9 +37,9 @@
   nav a { color: #444; text-decoration: none; font-size: 0.95em; font-weight: 500; }
   nav a:hover { color: #1a1a1a; }
 
-  .hero { padding: 80px 0 60px; text-align: center; }
+  .hero { padding: 72px 0 48px; text-align: center; }
   .hero h1 {
-    font-size: clamp(2em, 5vw, 3.5em);
+    font-size: clamp(1.9em, 5vw, 3.2em);
     font-weight: 800;
     line-height: 1.15;
     margin-bottom: 20px;
@@ -58,38 +51,114 @@
     background: linear-gradient(180deg, transparent 60%, #FFC300 60%);
     padding: 0 4px;
   }
-  .hero p {
-    font-size: clamp(1.05em, 2vw, 1.25em);
+  .hero .subtitle {
+    font-size: clamp(1.05em, 2vw, 1.2em);
     color: #444;
     max-width: 700px;
     margin: 0 auto 32px;
   }
-  .cta-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-  .btn {
-    display: inline-block;
-    padding: 14px 28px;
+
+  .search-box {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    border: 1px solid #eee;
+    max-width: 860px;
+    margin: 0 auto;
+    text-align: left;
+  }
+  .search-row { display: flex; gap: 10px; }
+  #yt-query {
+    flex: 1;
+    padding: 15px;
+    border: 2px solid #E2E8F0;
     border-radius: 8px;
-    font-weight: 700;
-    font-size: 1em;
-    text-decoration: none;
-    transition: transform 0.15s;
-    cursor: pointer;
-    border: none;
+    font-size: 16px;
+    outline: none;
+    color: #334155;
     font-family: inherit;
-    text-align: center;
   }
-  .btn:hover { transform: translateY(-2px); }
-  .btn-primary { 
-    background: #1a1a1a; 
-    color: #FFC300; 
-    border: 2px solid #FFC300;
+  #yt-query:focus { border-color: #F5B700; }
+  #yt-btn {
+    background: #F5B700;
+    color: #1E293B;
+    font-weight: bold;
+    border: none;
+    padding: 0 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.2s;
+    font-family: inherit;
   }
-  .btn-secondary { 
-    background: transparent; 
-    color: #1a1a1a; 
-    border: 2px solid #1a1a1a; 
+  #yt-btn:hover { background: #E5A700; }
+  #yt-btn:disabled { background: #E2E8F0; cursor: not-allowed; }
+  .search-hint { margin: 10px 0 0 0; font-size: 13px; color: #64748B; line-height: 1.5; }
+  .search-hint strong { color: #334155; }
+
+  .filters-row { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+  .filters-row select {
+    flex: 1;
+    min-width: 130px;
+    padding: 10px;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    color: #334155;
+    font-family: inherit;
+    background: white;
   }
-  .microcopy { font-size: 0.9em; color: #595959; margin-top: 16px; }
+  #btn-limpiar {
+    padding: 10px 16px;
+    background: #F1F5F9;
+    color: #475569;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+  #yt-loader { display: none; text-align: center; margin-top: 15px; color: #64748B; }
+  #yt-error { display: none; color: #DC2626; margin-top: 15px; font-size: 14px; }
+  #yt-results { margin-top: 20px; max-height: 500px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+
+  .access-box {
+    margin-top: 15px;
+    padding: 12px 15px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .access-box input {
+    padding: 8px 12px;
+    border: 2px solid #E2E8F0;
+    border-radius: 6px;
+    font-size: 13px;
+    width: 180px;
+    outline: none;
+    font-family: inherit;
+  }
+  .access-box input:focus { border-color: #F5B700; }
+  .access-box button {
+    padding: 8px 16px;
+    background: #F5B700;
+    color: #1E293B;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .access-msg { font-size: 13px; }
+  .access-msg.ok { color: #166534; }
+  .access-msg.err { color: #991B1B; }
 
   .features { padding: 60px 0; background: #fafafa; }
   .section-title {
@@ -120,57 +189,35 @@
   }
   .card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
   .card-icon { font-size: 2em; margin-bottom: 16px; display: block; }
-  .card h3 { font-size: 1.2em; font-weight: 700; margin-bottom: 12px; }
+  .card h3 { font-size: 1.15em; font-weight: 700; margin-bottom: 12px; }
   .card p { color: #333; font-size: 0.95em; }
-  .card code {
-    display: block;
-    background: #1a1a1a;
-    color: #FFC300;
-    padding: 12px;
-    border-radius: 6px;
-    font-size: 0.85em;
-    margin-top: 16px;
-    overflow-x: auto;
-  }
 
-  .pricing { padding: 80px 0; }
-  .grid-pricing {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 24px;
-    margin-top: 48px;
-  }
-  .price-card {
-    padding: 32px;
+  .example { padding: 60px 0; }
+  .example-card {
+    background: white;
+    border: 1px solid #eee;
+    border-left: 4px solid #F5B700;
     border-radius: 12px;
-    border: 2px solid #eee;
-    text-align: center;
+    padding: 28px;
+    max-width: 800px;
+    margin: 0 auto;
   }
-  .price-card.featured { border-color: #FFC300; position: relative; }
-  .price-card.featured::before {
-    content: "Más popular";
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #FFC300;
-    color: #1a1a1a;
-    padding: 4px 16px;
-    border-radius: 20px;
-    font-size: 0.8em;
-    font-weight: 700;
-  }
-  .price-card h3 { font-size: 1.2em; margin-bottom: 8px; }
-  .price { font-size: 2.5em; font-weight: 800; margin: 16px 0; }
-  .price span { font-size: 0.4em; color: #595959; font-weight: 400; }
-  .price-card ul { list-style: none; text-align: left; margin: 24px 0; }
-  .price-card li { padding: 8px 0; color: #333; font-size: 0.95em; }
-  .price-card li::before { content: "✓ "; color: #FFC300; font-weight: 700; }
+  .example-meta { font-size: 0.9em; color: #64748B; margin-bottom: 16px; }
+  .example-card h4 { font-size: 1.1em; margin-bottom: 8px; color: #2563EB; }
+  .example-card .label { font-weight: 700; font-size: 0.85em; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 16px; margin-bottom: 4px; }
+  .example-card p { color: #334155; font-size: 0.95em; }
 
-  .faq { padding: 60px 0; background: #fafafa; }
-  .faq-item { background: white; padding: 24px; border-radius: 8px; margin-bottom: 12px; }
-  .faq-item h3 { font-size: 1.05em; margin-bottom: 8px; }
-  .faq-item p { color: #333; font-size: 0.95em; }
+  .early-access { padding: 60px 0; background: #fafafa; text-align: center; }
+  .early-access .box {
+    max-width: 700px;
+    margin: 0 auto;
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 40px 32px;
+  }
+  .early-access p { color: #334155; margin-bottom: 12px; }
+  .early-access a { color: #1a1a1a; font-weight: 700; }
 
   footer {
     padding: 40px 0;
@@ -185,10 +232,25 @@
 
   mark { background-color: #FDE047; color: inherit; padding: 0 2px; border-radius: 2px; }
 
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   @media (max-width: 640px) {
-    nav ul { gap: 16px; }
+    nav ul { gap: 14px; }
     nav a { font-size: 0.85em; }
+    nav ul li:nth-child(2) { display: none; }
     .hero { padding: 48px 0 32px; }
+    .search-row { flex-direction: column; }
+    #yt-btn { padding: 12px; }
   }
 </style>
 </head>
@@ -198,81 +260,215 @@
   <div class="container">
     <a href="/" class="logo">Yellow Tips</a>
     <ul>
-      <li><a href="#features">Features</a></li>
-      <li><a href="#pricing">Pricing</a></li>
-      <li><a href="#faq">FAQ</a></li>
-      <li><a href="https://docs.yellowtips.com">Docs</a></li>
-      <li><a href="https://github.com/ProcontextMax">GitHub</a></li>
+      <li><a href="#buscar">Buscar</a></li>
+      <li><a href="#como-funciona">Cómo funciona</a></li>
+      <li><a href="mailto:contacto@yellowtips.com">Contacto</a></li>
     </ul>
   </div>
 </nav>
 
 <main>
 
-<section class="hero">
+<section class="hero" id="buscar">
   <div class="container">
-    <h1>Inteligencia artificial y jurisprudencia real <span class="highlight">para el sector legal en LATAM</span></h1>
-    <p>Busca precedentes, verifica citas y protege datos personales con endpoints listos para producción. Sin alucinaciones. Sin fricción.</p>
-    <!-- YellowTips Search Integration -->
-<div class="yt-search-widget" style="margin-top: 30px; margin-bottom: 30px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: left;">
-  <div style="display: flex; gap: 10px;">
-    <input type="text" id="yt-query" placeholder="Ej: me despidieron por estar enfermo, pensión de vejez negada..." style="flex: 1; padding: 15px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 16px; outline: none; color: #334155;" onkeydown="if(event.keyCode === 13) realizarBusquedaLanding()">
-    <button onclick="realizarBusquedaLanding()" id="yt-btn" style="background: #F5B700; color: #1E293B; font-weight: bold; border: none; padding: 0 25px; border-radius: 8px; cursor: pointer; font-size: 16px; transition: 0.2s;">Buscar</button>
-  </div>
-  <p style="margin: 10px 0 0 0; font-size: 13px; color: #64748B; line-height: 1.5;">
-    💡 <strong>Buscá como hablarías normalmente:</strong> "me despidieron por estar enfermo", "pensión de vejez negada", "tutela por salud". También acepta conceptos jurídicos y citas (T-229/25). Los filtros de abajo son opcionales.
-  </p>
-  <p id="yt-corpus-info" style="margin: 6px 0 0 0; font-size: 12px; color: #94A3B8;">
-    📊 Cargando información del corpus...
-  </p>
-  <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; align-items: center;">
-    <select id="yt-sentido" style="flex: 1; min-width: 140px; padding: 10px; border: 1px solid #E2E8F0; border-radius: 8px; color: #334155;">
-      <option value="">Cualquier sentido</option>
-      <option value="concede">Concede</option>
-      <option value="niega">Niega</option>
-      <option value="modula">Modula</option>
-    </select>
-    <select id="yt-derecho" style="flex: 1; min-width: 140px; padding: 10px; border: 1px solid #E2E8F0; border-radius: 8px; color: #334155;">
-      <option value="">Cualquier derecho</option>
-      <option value="pension">Pensión</option>
-      <option value="estabilidad">Estabilidad</option>
-      <option value="discapacidad">Discapacidad</option>
-      <option value="trabajo">Trabajo</option>
-    </select>
-    <select id="yt-anio" style="flex: 1; min-width: 120px; padding: 10px; border: 1px solid #E2E8F0; border-radius: 8px; color: #334155;">
-      <option value="">Cualquier año</option>
-    </select>
-    <select id="yt-tipo" style="flex: 1; min-width: 160px; padding: 10px; border: 1px solid #E2E8F0; border-radius: 8px; color: #334155;">
-      <option value="">Cualquier tipo</option>
-      <option value="T">Tutela (T)</option>
-      <option value="C">Constitucionalidad (C)</option>
-      <option value="SU">Unificación (SU)</option>
-    </select>
-    <button onclick="limpiarFiltros()" style="padding: 10px 16px; background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; white-space: nowrap;">Limpiar filtros</button>
-  </div>
-  <div id="yt-loader" style="display: none; text-align: center; margin-top: 15px; color: #64748B;">⏳ Analizando jurisprudencia...</div>
-  <div id="yt-error" style="display: none; color: #DC2626; margin-top: 15px; font-size: 14px;"></div>
-  <div id="yt-results" style="margin-top: 20px; max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;"></div>
-</div>
-<script>
-const MAX_FREE_SEARCHES = 5;
+    <h1>Encuentra la sentencia de la Corte Constitucional <span class="highlight">que resuelve tu caso</span></h1>
+    <p class="subtitle">Estamos construyendo la herramienta de búsqueda jurídica más completa de Colombia. Súmate a probarla.</p>
 
-// Cargar info del corpus desde /health (badge bajo el buscador + poblar años dinámicamente)
+    <div class="search-box">
+      <div class="search-row">
+        <input type="text" id="yt-query" placeholder="Ej: EPS no autoriza medicamento no INVIMA" aria-label="Buscar sentencias por caso o concepto jurídico" onkeydown="if(event.keyCode === 13) realizarBusquedaLanding()">
+        <button onclick="realizarBusquedaLanding()" id="yt-btn">Buscar</button>
+      </div>
+      <p class="search-hint">💡 <strong>Busca como hablarías normalmente:</strong> "me despidieron por estar enfermo", "pensión de vejez negada", "tutela por salud". También acepta conceptos jurídicos y citas (T-229/25).</p>
+
+      <div class="filters-row">
+        <label for="yt-sentido" class="sr-only">Sentido de la decisión</label>
+        <select id="yt-sentido">
+          <option value="">Cualquier sentido</option>
+          <option value="concede">Concede</option>
+          <option value="niega">Niega</option>
+          <option value="modula">Modula</option>
+        </select>
+        <label for="yt-derecho" class="sr-only">Derecho involucrado</label>
+        <select id="yt-derecho">
+          <option value="">Cualquier derecho</option>
+          <option value="pension">Pensión</option>
+          <option value="estabilidad">Estabilidad</option>
+          <option value="discapacidad">Discapacidad</option>
+          <option value="trabajo">Trabajo</option>
+        </select>
+        <label for="yt-anio" class="sr-only">Año de la sentencia</label>
+        <select id="yt-anio">
+          <option value="">Cualquier año</option>
+        </select>
+        <label for="yt-tipo" class="sr-only">Tipo de sentencia</label>
+        <select id="yt-tipo">
+          <option value="">Cualquier tipo</option>
+          <option value="T">Tutela (T)</option>
+          <option value="C">Constitucionalidad (C)</option>
+          <option value="SU">Unificación (SU)</option>
+        </select>
+        <button id="btn-limpiar" onclick="limpiarFiltros()">Limpiar filtros</button>
+      </div>
+
+      <div class="access-box" id="accessBox">
+        <input type="text" id="accessCode" placeholder="Código de acceso" />
+        <button onclick="activarCodigo()">Activar</button>
+        <span class="access-msg" id="accessMsg"></span>
+      </div>
+
+      <div id="yt-loader">⏳ Analizando jurisprudencia...</div>
+      <div id="yt-error"></div>
+      <div id="yt-results"></div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="como-funciona">
+  <div class="container">
+    <h2 class="section-title">Por qué es distinto</h2>
+    <p class="section-subtitle">No es un buscador de palabras clave. Es una herramienta que entiende el caso.</p>
+
+    <div class="grid-3">
+      <div class="card">
+        <span class="card-icon">🔎</span>
+        <h3>Búsqueda semántica</h3>
+        <p>Escribe el caso como lo piensas. La herramienta entiende el problema, no solo las palabras.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-icon">⚖️</span>
+        <h3>Problema jurídico y ratio extraídos</h3>
+        <p>No leas 80 páginas. Te mostramos la formulación central y la regla que aplicó la Corte.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-icon">🔗</span>
+        <h3>Link directo a la fuente oficial</h3>
+        <p>Cada resultado te lleva a la sentencia original en la Relatoría. Verificas siempre en la fuente.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="example">
+  <div class="container">
+    <h2 class="section-title">Así se ve una búsqueda</h2>
+    <p class="section-subtitle">Un ejemplo real de lo que devuelve el buscador.</p>
+
+    <div class="example-card">
+      <div class="example-meta"><strong>T-760 de 2008</strong> · Corte Constitucional · Tutela</div>
+      <h3><a href="/sentencia?id=T-760-08" style="color:#2563EB; text-decoration:none;">Sentencia T-760 de 2008</a></h3>
+      <div class="label">Problema jurídico</div>
+      <p>Determinar si la negativa de una EPS a suministrar un medicamento no incluido en el POS vulnera el derecho fundamental a la salud.</p>
+      <div class="label">Ratio decidendi</div>
+      <p>La Corte estableció que el derecho a la salud es fundamental y que las EPS deben garantizar el acceso a los medicamentos necesarios, incluso si no están en el POS, cuando existe prescripción médica.</p>
+    </div>
+  </div>
+</section>
+
+<section class="early-access">
+  <div class="container">
+    <div class="box">
+      <h2 class="section-title" style="font-size:1.6em;">Acceso anticipado</h2>
+      <p>Estamos en una etapa inicial. La búsqueda es gratuita mientras mejoramos la herramienta.</p>
+      <p>Si encuentras un error o algo no funciona como esperas, escríbenos a <a href="mailto:contacto@yellowtips.com">contacto@yellowtips.com</a>. Tu feedback nos ayuda a construirla.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="links">
+      <a href="https://docs.yellowtips.com">¿Eres desarrollador? Mira la API →</a>
+    </div>
+    <div class="links">
+      <a href="mailto:contacto@yellowtips.com">contacto@yellowtips.com</a>
+    </div>
+    <p>© 2026 Yellow Tips · Búsqueda jurídica con IA para abogados en Colombia</p>
+  </div>
+</footer>
+
+<script>
+const MAX_FREE_SEARCHES = 30;
+const PROXY_URL = "https://yellowtips-app.pages.dev/api/argument";
+const VERIFY_URL = "https://yellowtips-app.pages.dev/api/verify-code";
+let ultimaBusqueda = { q: "", sentido: "", derecho: "", anio: "", tipo: "", expandida: false };
+
+// --- Código de acceso ---
+function getAcceso() {
+  try {
+    const raw = localStorage.getItem("yt_acceso");
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (new Date(data.vence) < new Date()) {
+      localStorage.removeItem("yt_acceso");
+      return null;
+    }
+    return data;
+  } catch (e) {
+    return null;
+  }
+}
+
+function mostrarAccesoActivo(data) {
+  const box = document.getElementById("accessBox");
+  const msg = document.getElementById("accessMsg");
+  box.innerHTML = "";
+  msg.textContent = "Acceso activo hasta " + data.vence;
+  msg.className = "access-msg ok";
+  box.appendChild(msg);
+  // Desbloquear si estaba bloqueado
+  const input = document.getElementById("yt-query");
+  const btn = document.getElementById("yt-btn");
+  input.disabled = false;
+  input.placeholder = "Ej: EPS no autoriza medicamento no INVIMA";
+  btn.disabled = false;
+  btn.textContent = "Buscar";
+  btn.style.background = "#F5B700";
+}
+
+async function activarCodigo() {
+  const input = document.getElementById("accessCode");
+  const msg = document.getElementById("accessMsg");
+  const code = input.value.trim().toUpperCase();
+  if (!code) {
+    msg.textContent = "Ingresá un código.";
+    msg.className = "access-msg err";
+    return;
+  }
+  try {
+    const res = await fetch(VERIFY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code })
+    });
+    const data = await res.json();
+    if (!data.valid) {
+      msg.textContent = data.reason === "expired"
+        ? "Código vencido. Escríbenos a contacto@yellowtips.com"
+        : "Código inválido. Escríbenos a contacto@yellowtips.com";
+      msg.className = "access-msg err";
+      return;
+    }
+    localStorage.setItem("yt_acceso", JSON.stringify({ code, vence: data.expires_at }));
+    mostrarAccesoActivo({ vence: data.expires_at });
+  } catch (e) {
+    msg.textContent = "Error de conexión. Probá de nuevo.";
+    msg.className = "access-msg err";
+  }
+}
+
+// Cargar años disponibles desde /health (para el select)
 fetch("https://api.yellowtips.com/health")
   .then(r => r.json())
   .then(d => {
-    const info = document.getElementById("yt-corpus-info");
-    if (!info) return;
     const c = d && d.data && d.data.corpus;
-    if (!c || !c.total || !c.fecha_min || !c.fecha_max) { info.style.display = "none"; return; }
-    const meses = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+    if (!c || !c.fecha_min || !c.fecha_max) return;
     const fmin = new Date(c.fecha_min + "T00:00:00Z");
     const fmax = new Date(c.fecha_max + "T00:00:00Z");
-    const mesAnioMin = meses[fmin.getUTCMonth()] + " " + fmin.getUTCFullYear();
-    const mesAnioMax = meses[fmax.getUTCMonth()] + " " + fmax.getUTCFullYear();
-    const totalFmt = (c.total_buscables || c.total).toLocaleString("es-CO");
-    info.innerHTML = "📊 <strong>" + totalFmt + " sentencias</strong> de la Corte Constitucional de Colombia · cobertura " + mesAnioMin + " – " + mesAnioMax;
-    // Poblar select de años dinámicamente (desde fecha_min hasta fecha_max)
     const selAnio = document.getElementById("yt-anio");
     if (selAnio) {
       const anioMin = fmin.getUTCFullYear();
@@ -285,19 +481,24 @@ fetch("https://api.yellowtips.com/health")
       }
     }
   })
-  .catch(() => {
-    const info = document.getElementById("yt-corpus-info");
-    if (info) info.style.display = "none";
-  });
+  .catch(() => {});
 
-const PROXY_URL = "https://yellowtips-app.pages.dev/api/argument";
 document.addEventListener("DOMContentLoaded", () => {
-  const calls = parseInt(localStorage.getItem("yt_landing_calls") || "0", 10);
-  if (calls >= MAX_FREE_SEARCHES) bloquearBuscador();
+  const acceso = getAcceso();
+  if (acceso) {
+    mostrarAccesoActivo(acceso);
+  } else {
+    const calls = parseInt(localStorage.getItem("yt_landing_calls") || "0", 10);
+    if (calls >= MAX_FREE_SEARCHES) bloquearBuscador();
+  }
 });
+
 async function realizarBusquedaLanding() {
-  let calls = parseInt(localStorage.getItem("yt_landing_calls") || "0", 10);
-  if (calls >= MAX_FREE_SEARCHES) { bloquearBuscador(); return; }
+  const acceso = getAcceso();
+  if (!acceso) {
+    let calls = parseInt(localStorage.getItem("yt_landing_calls") || "0", 10);
+    if (calls >= MAX_FREE_SEARCHES) { bloquearBuscador(); return; }
+  }
   const q = document.getElementById("yt-query").value.trim();
   const sentido = document.getElementById("yt-sentido").value;
   const derecho = document.getElementById("yt-derecho").value;
@@ -318,8 +519,13 @@ async function realizarBusquedaLanding() {
     const response = await fetch(PROXY_URL + "?" + params.toString());
     const data = await response.json();
     if (!response.ok) throw new Error(data.error?.message || "Error en el servidor");
-    calls++;
-    localStorage.setItem("yt_landing_calls", calls);
+    if (!acceso) {
+      let calls = parseInt(localStorage.getItem("yt_landing_calls") || "0", 10);
+      calls++;
+      localStorage.setItem("yt_landing_calls", calls);
+    }
+    ultimaBusqueda = { q, sentido, derecho, anio, tipo, expandida: false };
+    const calls = parseInt(localStorage.getItem("yt_landing_calls") || "0", 10);
     renderResultadosLanding(data.data.results, calls, q);
   } catch (err) {
     errorDiv.textContent = "⚠️ " + err.message;
@@ -329,19 +535,52 @@ async function realizarBusquedaLanding() {
     loader.style.display = "none";
   }
 }
+
+async function masResultados() {
+  if (ultimaBusqueda.expandida) return;
+  const { q, sentido, derecho, anio, tipo } = ultimaBusqueda;
+  const btn = document.getElementById("yt-btn");
+  const loader = document.getElementById("yt-loader");
+  const errorDiv = document.getElementById("yt-error");
+  btn.disabled = true; loader.style.display = "block"; errorDiv.style.display = "none";
+  const params = new URLSearchParams({ q, limit: 15 });
+  if (sentido) params.append("sentido", sentido);
+  if (derecho) params.append("derecho", derecho);
+  if (anio) params.append("anio", anio);
+  if (tipo) params.append("tipo", tipo);
+  try {
+    const response = await fetch(PROXY_URL + "?" + params.toString());
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error?.message || "Error en el servidor");
+    ultimaBusqueda.expandida = true;
+    const calls = parseInt(localStorage.getItem("yt_landing_calls") || "0", 10);
+    renderResultadosLanding(data.data.results, calls, q);
+  } catch (err) {
+    errorDiv.textContent = "⚠️ " + err.message;
+    errorDiv.style.display = "block";
+  } finally {
+    btn.disabled = false;
+    loader.style.display = "none";
+  }
+}
+
 function renderResultadosLanding(results, calls, q) {
   const container = document.getElementById("yt-results");
+  const acceso = getAcceso();
   if (!results || results.length === 0) {
     container.innerHTML = '<p style="color:#64748B; font-size:14px; text-align:center;">No se encontraron resultados.</p>';
     return;
   }
-  let html = '<p style="font-size: 12px; color: #64748B; margin-bottom: 10px;">Búsquedas restantes: ' + (MAX_FREE_SEARCHES - calls) + ' de ' + MAX_FREE_SEARCHES + '</p>';
+  let html = "";
+  if (!acceso) {
+    const restantes = MAX_FREE_SEARCHES - calls;
+    html += '<p style="font-size: 12px; color: #64748B; margin-bottom: 10px;">Búsquedas restantes: ' + restantes + ' de ' + MAX_FREE_SEARCHES + '</p>';
+  }
   const badChar = String.fromCharCode(65533);
   results.forEach(r => {
     let badgeColor = r.sentido === "concede" ? "#DCFCE7" : r.sentido === "niega" ? "#FEE2E2" : "#FEF3C7";
     let textColor = r.sentido === "concede" ? "#166534" : r.sentido === "niega" ? "#991B1B" : "#92400E";
     let snippetLimpio = (r.snippet_problema || r.problema_juridico || "").replace(new RegExp(badChar + 'n', 'g'), "ón").replace(new RegExp(badChar + 's', 'g'), "ás").replace(new RegExp(badChar, 'g'), "e");
-    // Highlight: marcar las palabras del query en el snippet
     let snippetHighlight = snippetLimpio;
     if (q) {
       const palabras = q.toLowerCase().split(/\s+/).filter(w => w.length > 2);
@@ -351,178 +590,39 @@ function renderResultadosLanding(results, calls, q) {
       });
     }
     html += '<div style="border-left: 3px solid #F5B700; padding-left: 15px; padding-bottom: 5px;">';
-    html += '<h4 style="margin: 0 0 5px 0; font-size: 15px;"><a href="/sentencia?id=' + r.id + '" style="color: #2563EB; text-decoration: none;">' + (r.titulo || "Sentencia " + r.id) + '</a></h4>';
+    html += '<h3 style="margin: 0 0 5px 0; font-size: 15px;"><a href="/sentencia?id=' + r.id + '" style="color: #2563EB; text-decoration: none;">' + (r.titulo || "Sentencia " + r.id) + '</a></h3>';
     html += '<div style="font-size: 12px; color: #64748B; margin-bottom: 8px; display: flex; gap: 10px; align-items: center;"><span>' + r.fecha + '</span><span style="background:' + badgeColor + '; color:' + textColor + '; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase;">' + r.sentido + '</span></div>';
     html += '<div style="font-size: 14px; color: #334155; line-height: 1.5;">...' + snippetHighlight.substring(0, 400) + '...</div></div>';
   });
+  if (!ultimaBusqueda.expandida && results.length >= 5) {
+    html += '<div style="text-align: center; margin-top: 15px;"><button onclick="masResultados()" style="padding: 10px 20px; background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; font-family: inherit;">Más resultados</button></div>';
+  }
   container.innerHTML = html;
-  if (calls >= MAX_FREE_SEARCHES) bloquearBuscador();
+  if (!acceso && calls >= MAX_FREE_SEARCHES) bloquearBuscador();
 }
+
 function limpiarFiltros() {
   document.getElementById("yt-sentido").value = "";
   document.getElementById("yt-derecho").value = "";
   document.getElementById("yt-anio").value = "";
   document.getElementById("yt-tipo").value = "";
   document.getElementById("yt-query").value = "";
+  ultimaBusqueda = { q: "", sentido: "", derecho: "", anio: "", tipo: "", expandida: false };
 }
+
 function bloquearBuscador() {
+  const acceso = getAcceso();
+  if (acceso) return;
   const btn = document.getElementById("yt-btn");
   const input = document.getElementById("yt-query");
   const container = document.getElementById("yt-results");
   input.disabled = true;
   input.placeholder = "Límite de prueba alcanzado";
   btn.disabled = true;
-  btn.textContent = "Bloqueado";
+  btn.textContent = "Límite alcanzado";
   btn.style.background = "#E2E8F0";
-  container.innerHTML = '<div style="background: #FEF3C7; border: 1px solid #F59E0B; padding: 15px; border-radius: 8px; text-align: center; margin-top: 15px;"><p style="margin: 0; color: #92400E; font-weight: bold;">Has alcanzado el límite de 5 búsquedas gratuitas.</p><p style="margin: 5px 0 0 0; color: #92400E; font-size: 13px;">Crea una cuenta o explora la documentación para seguir usando el motor.</p><a href="https://docs.yellowtips.com" style="display: inline-block; margin-top: 10px; background: #F5B700; color: #1E293B; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px;">Obtener API Key</a></div>';
+  container.innerHTML = '<div style="background: #FEF3C7; border: 1px solid #F59E0B; padding: 18px; border-radius: 8px; text-align: center; margin-top: 15px;"><p style="margin: 0 0 6px 0; color: #92400E; font-weight: bold;">Alcanzaste el límite de 30 búsquedas gratuitas.</p><p style="margin: 0; color: #92400E; font-size: 14px;">Sigue probando: escríbenos a <a href="mailto:contacto@yellowtips.com" style="color:#92400E; font-weight:bold;">contacto@yellowtips.com</a> para acceso extendido.</p></div>';
 }
-</script>
-
-    <div class="cta-group">
-      <a href="https://docs.yellowtips.com" class="btn btn-primary">Explorar la API</a>
-      <a href="https://github.com/ProcontextMax" class="btn btn-secondary">Ver GitHub</a>
-    </div>
-    <p class="microcopy">100 llamadas gratis al mes · Sin tarjeta de crédito</p>
-  </div>
-</section>
-
-<section class="features" id="features">
-  <div class="container">
-    <h2 class="section-title">Lo que resuelve</h2>
-    <p class="section-subtitle">Cada endpoint resuelve un problema que los LLMs no pueden resolver solos en LATAM.</p>
-
-    <div class="grid-3">
-      <div class="card">
-        <span class="card-icon">⚖️</span>
-        <h3>Verificación legal</h3>
-        <p>Detecta citas fabricadas y citas a derecho derogado (<em>dead law</em>). Verifica existencia, relevancia y temporalidad.</p>
-        <code>POST /v1/legal/verify-citation</code>
-      </div>
-
-      <div class="card">
-        <span class="card-icon">🧾</span>
-        <h3>Argumentación legal</h3>
-        <p>Extrae el problema jurídico, la ratio decidendi y el sentido de la decisión de miles de tutelas.</p>
-        <code>GET /v1/legal/argument</code>
-      </div>
-
-      <div class="card">
-        <span class="card-icon">🛡️</span>
-        <h3>Redacción de PII</h3>
-        <p>Enmascara datos personales antes de procesar: RFC, CURP, CUIT, RUT, NIT, DNI, NIE, IBAN.</p>
-        <code>POST /v1/privacy/redact</code>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="pricing" id="pricing">
-  <div class="container">
-    <h2 class="section-title">Precios simples</h2>
-    <p class="section-subtitle">Empieza gratis. Escala cuando lo necesites. Sin contratos.</p>
-
-    <div class="grid-pricing">
-      <div class="price-card">
-        <h3>Free</h3>
-        <div class="price">$0<span>/mes</span></div>
-        <ul>
-          <li>100 llamadas/mes</li>
-          <li>Todos los endpoints</li>
-          <li>Sin tarjeta de crédito</li>
-          <li>Community support</li>
-        </ul>
-        <a href="https://docs.yellowtips.com" class="btn btn-secondary" style="width:100%;">Empezar gratis</a>
-      </div>
-
-      <div class="price-card featured">
-        <h3>Starter</h3>
-        <div class="price">$19<span>/mes</span></div>
-        <ul>
-          <li>1,000 llamadas/mes</li>
-          <li>Todos los endpoints</li>
-          <li>Email support</li>
-          <li>API key dedicada</li>
-        </ul>
-        <a href="#" onclick="event.preventDefault(); openCheckout('pri_01m5nnww9bxsdwr7a2skse733g');" class="btn btn-primary" style="width:100%;">Suscribirse</a>
-      </div>
-
-      <div class="price-card">
-        <h3>Pro</h3>
-        <div class="price">$49<span>/mes</span></div>
-        <ul>
-          <li>5,000 llamadas/mes</li>
-          <li>Todos los endpoints</li>
-          <li>Priority support</li>
-          <li>SLA 99.9%</li>
-        </ul>
-        <a href="#" onclick="event.preventDefault(); openCheckout('pri_01m5nnspwenrdkxn9tpab41p99');" class="btn btn-secondary" style="width:100%;">Suscribirse</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="faq" id="faq">
-  <div class="container">
-    <h2 class="section-title">Preguntas frecuentes</h2>
-    <p class="section-subtitle">Lo que necesitas saber antes de empezar.</p>
-
-    <div class="faq-item">
-      <h3>¿Qué países cubren?</h3>
-      <p>México, Colombia, Argentina, Chile, Perú y España. Estamos añadiendo más países de LATAM progresivamente.</p>
-    </div>
-
-    <div class="faq-item">
-      <h3>¿Cómo se integra con mi agente de IA?</h3>
-      <p>Es una API REST estándar. Haces un POST con tu API key y recibes JSON. Funciona con cualquier LLM: OpenAI, Claude, Gemini, Llama, o tu agente custom.</p>
-    </div>
-
-    <div class="faq-item">
-      <h3>¿Qué pasa si la cita no está en su base de datos?</h3>
-      <p>Devuelve <code>status: partial</code> con <code>existence_check: not_found</code>. No inventamos una respuesta. Preferimos decir "no puedo verificar" antes que arriesgar una cita falsa.</p>
-    </div>
-
-    <div class="faq-item">
-      <h3>¿Puedo usar la API en producción?</h3>
-      <p>Sí. El plan Free es para desarrollo. Los planes Starter y Pro incluyen SLA y soporte para producción.</p>
-    </div>
-
-    <div class="faq-item">
-      <h3>¿Cómo cancelo mi suscripción?</h3>
-      <p>Desde tu dashboard en cualquier momento. Sin preguntas, sin penalización. Sigues teniendo acceso hasta el final del período pagado.</p>
-    </div>
-  </div>
-</section>
-
-</main>
-
-<footer>
-  <div class="container">
-    <div class="links">
-      <a href="https://docs.yellowtips.com">Docs</a>
-      <a href="https://github.com/ProcontextMax">GitHub</a>
-      <a href="https://ko-fi.com/yellowtips">Ko-fi</a>
-      <a href="mailto:hello@yellowtips.com">Contacto</a>
-    </div>
-    <p>© 2026 Yellow Tips · Built from Colombia for LATAM & Spain.</p>
-  </div>
-</footer>
-
-<script>
-  function openCheckout(priceId) {
-    if (typeof Paddle === "undefined" || !Paddle.Checkout) {
-      alert("Paddle is still loading. Please wait a second and try again.");
-      return;
-    }
-    Paddle.Checkout.open({
-      items: [{ priceId: priceId, quantity: 1 }],
-      settings: {
-        displayMode: "overlay",
-        theme: "light",
-        locale: "es",
-        successUrl: "https://yellowtips.com"
-      }
-    });
-  }
 </script>
 
 <!-- Default Statcounter code for A A A Yellow Tips
