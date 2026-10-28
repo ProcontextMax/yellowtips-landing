@@ -1,11 +1,12 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Yellow Tips · Buscador de jurisprudencia de la Corte Constitucional</title>
-<meta name="description" content="Encuentra la sentencia de la Corte Constitucional que resuelve tu caso. Búsqueda por problema jurídico, con ratio decidendi extraída y link a la fuente oficial.">
+<meta name="description" content="Encuentra la sentencia de la Corte Constitucional que resuelve tu caso. Búsqueda semántica por tema, con link directo a la fuente oficial.">
 <meta property="og:title" content="Yellow Tips · Buscador de jurisprudencia de la Corte Constitucional">
-<meta property="og:description" content="Encuentra la sentencia que resuelve tu caso. Búsqueda semántica por problema jurídico, con ratio extraída.">
+<meta property="og:description" content="Encuentra la sentencia que resuelve tu caso. Búsqueda semántica, con link directo a la fuente oficial.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://yellowtips.com/">
 <meta property="og:locale" content="es_CO">
@@ -203,7 +204,7 @@
     margin: 0 auto;
   }
   .example-meta { font-size: 0.9em; color: #64748B; margin-bottom: 16px; }
-  .example-card h4 { font-size: 1.1em; margin-bottom: 8px; color: #2563EB; }
+  .example-card h3 { font-size: 1.1em; margin-bottom: 8px; color: #2563EB; }
   .example-card .label { font-weight: 700; font-size: 0.85em; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 16px; margin-bottom: 4px; }
   .example-card p { color: #334155; font-size: 0.95em; }
 
@@ -272,7 +273,7 @@
 <section class="hero" id="buscar">
   <div class="container">
     <h1>Encuentra la sentencia de la Corte Constitucional <span class="highlight">que resuelve tu caso</span></h1>
-    <p class="subtitle">Estamos construyendo la herramienta de búsqueda jurídica más completa de Colombia. Súmate a probarla.</p>
+    <p class="subtitle">Encuentra la sentencia que resuelve tu caso en segundos, con link directo a la fuente oficial. Estamos en acceso anticipado: pruébala gratis.</p>
 
     <div class="search-box">
       <div class="search-row">
@@ -327,19 +328,19 @@
 <section class="features" id="como-funciona">
   <div class="container">
     <h2 class="section-title">Por qué es distinto</h2>
-    <p class="section-subtitle">No es un buscador de palabras clave. Es una herramienta que entiende el caso.</p>
+    <p class="section-subtitle">No es un buscador de palabras clave. Es una herramienta que entiende el tema.</p>
 
     <div class="grid-3">
       <div class="card">
         <span class="card-icon">🔎</span>
         <h3>Búsqueda semántica</h3>
-        <p>Escribe el caso como lo piensas. La herramienta entiende el problema, no solo las palabras.</p>
+        <p>Escribe el caso como lo piensas. La herramienta entiende el tema, no solo las palabras exactas.</p>
       </div>
 
       <div class="card">
-        <span class="card-icon">⚖️</span>
-        <h3>Problema jurídico y ratio extraídos</h3>
-        <p>No leas 80 páginas. Te mostramos la formulación central y la regla que aplicó la Corte.</p>
+        <span class="card-icon">⚡</span>
+        <h3>Encuentra en segundos</h3>
+        <p>Olvídate de navegar la Relatoría. Busca por caso, por derecho o por cita (T-229/25) y llega directo a la sentencia.</p>
       </div>
 
       <div class="card">
@@ -357,12 +358,14 @@
     <p class="section-subtitle">Un ejemplo real de lo que devuelve el buscador.</p>
 
     <div class="example-card">
-      <div class="example-meta"><strong>T-760 de 2008</strong> · Corte Constitucional · Tutela</div>
+      <div class="example-meta"><strong>Resultado de búsqueda</strong> · "EPS no autoriza medicamento no INVIMA"</div>
       <h3><a href="/sentencia?id=T-760-08" style="color:#2563EB; text-decoration:none;">Sentencia T-760 de 2008</a></h3>
-      <div class="label">Problema jurídico</div>
-      <p>Determinar si la negativa de una EPS a suministrar un medicamento no incluido en el POS vulnera el derecho fundamental a la salud.</p>
-      <div class="label">Ratio decidendi</div>
-      <p>La Corte estableció que el derecho a la salud es fundamental y que las EPS deben garantizar el acceso a los medicamentos necesarios, incluso si no están en el POS, cuando existe prescripción médica.</p>
+      <div style="font-size:0.85em; color:#64748B; margin-bottom:12px; display:flex; gap:10px; align-items:center;">
+        <span>2008-07-31</span>
+        <span style="background:#DCFCE7; color:#166534; padding:2px 8px; border-radius:4px; font-weight:700; text-transform:uppercase; font-size:0.85em;">Concede</span>
+      </div>
+      <p style="color:#334155; font-size:0.95em; margin-bottom:12px;">Sentencia de unificación sobre el derecho fundamental a la salud. La Corte ordenó reestructurar el sistema de salud para garantizar el acceso efectivo a los servicios.</p>
+      <a href="https://www.corteconstitucional.gov.co/relatoria/2008/T-760-08.htm" target="_blank" rel="noopener" style="color:#2563EB; font-weight:600; text-decoration:none; font-size:0.9em;">Ver texto original en la Corte ↗</a>
     </div>
   </div>
 </section>
@@ -420,7 +423,6 @@ function mostrarAccesoActivo(data) {
   msg.textContent = "Acceso activo hasta " + data.vence;
   msg.className = "access-msg ok";
   box.appendChild(msg);
-  // Desbloquear si estaba bloqueado
   const input = document.getElementById("yt-query");
   const btn = document.getElementById("yt-btn");
   input.disabled = false;
